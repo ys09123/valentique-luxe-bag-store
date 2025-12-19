@@ -59,5 +59,72 @@ Follow these steps to run the project locally on your machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/your-username/valentique-luxe-bag-store.git](https://github.com/your-username/valentique-luxe-bag-store.git)
+git clone [https://github.com/ys09123/valentique-luxe-bag-store.git](https://github.com/09123/valentique-luxe-bag-store.git)
 cd valentique-luxe-bag-store
+```
+
+### 2. Backend Setup
+Navigate to the backend folder and install dependencies:
+```bash
+cd backend
+npm install
+```
+Create a .env file in the backend folder and add:
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=3650d
+
+Start the backend server:
+```bash
+npm run dev
+```
+### 3. Frontend Setup
+
+Open a new terminal, navigate to the frontend folder, and install dependencies:
+```bash
+cd frontend
+npm install
+```
+
+Create a src/config.js (or .env file) for configuration:
+export const API_URL = "http://localhost:5000";
+
+Start the frontend development server:
+```bash
+npm run dev
+```
+
+### Project Structure
+
+valentique-luxe-bag-store/
+├── backend/
+│   ├── controllers/    # Route logic
+│   ├── config/         # Database logic
+│   ├── utils/          # Generate token
+│   ├── models/         # Mongoose schemas
+│   ├── routes/         # API endpoints
+│   ├── middleware/     # Auth & Upload middleware
+│   ├── uploads/        # Local image storage
+│   └── server.js       # Entry point
+│
+└── frontend/
+    ├── src/
+    │   ├── components/ # Reusable UI components
+    │   │   ├── cart/
+    │   │   ├── common/
+    │   │   ├── layout/
+    │   │   ├── product/
+    │   │   ├── ui/
+    │   ├── public/     # Used to store public assets
+    │   ├── pages/      # Full page views
+    │   │   ├── admin/
+    │   ├── context/    # Global state (Auth, Cart, Toast)
+    │   ├── lib/
+    │   ├── services/   # API calls
+    │   └── config.js   # Configuration
+    ├── index.html
+    ├── App.css
+    ├── App.jsx         # Entry point
+    ├── vite.config.js  # Vite configuration
+    └── main.jsx
