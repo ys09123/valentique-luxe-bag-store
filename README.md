@@ -21,8 +21,33 @@ A premium e-commerce platform for luxury bags, built with the **MERN Stack** (Mo
 ### 🛡️ Admin Features
 * **Dashboard:** Overview of store performance.
 * **Product Management:** Create, Read, Update, and Delete (CRUD) products.
+* **Order Management:** View all orders.
 * **Image Handling:** Upload and preview product images.
 * **User Management:** View registered users.
+
+---
+
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td><b>Home</b></td>
+    <td><b>Register</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/home.jpg" width="400"/></td>
+    <td><img src="screenshots/register.jpg" width="400"/></td>
+  </tr>
+  <tr>
+    <td><b>Products</b></td>
+    <td><b>Cart</b></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/product_1.jpg" width="400"/></td>
+    <td><img src="screenshots/product_2.jpg" width="400"/></td>
+    <td><img src="screenshots/cart.jpg" width="400"/></td>
+  </tr>
+</table>
 
 ---
 
@@ -173,3 +198,4 @@ POST	                    /api/orders	                Create a new order
 ---
 
 <p align="center"> Built with ❤️ by Yash </p>
+
