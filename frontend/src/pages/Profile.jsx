@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_URL } from '../config';
 import {
   User,
   Package,
@@ -424,7 +425,7 @@ const Profile = () => {
                                   {order.orderItems.map((item) => (
                                     <div key={item._id} className="flex gap-4">
                                       <img
-                                        src={`http://localhost:5000${item.image}`}
+                                        src={`${API_URL}${item.image}`}
                                         alt={item.name}
                                         className="w-16 h-16 rounded-lg object-cover"
                                       />

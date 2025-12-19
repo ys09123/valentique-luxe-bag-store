@@ -10,6 +10,7 @@ import { Label } from '../components/ui/label';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/toastContext';
 import { ordersAPI } from '../services/api';
+import { API_URL } from '../config'
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -272,7 +273,7 @@ const Checkout = () => {
                   {cart.items.map((item) => (
                     <div key={item._id} className="flex gap-3">
                       <img
-                        src={`http://localhost:5000${item.product.images[0]}`}
+                        src={`${API_URL}${item.product.images[0]}`}
                         alt={item.product.name}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
