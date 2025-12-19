@@ -97,7 +97,7 @@ npm run dev
 
 ---
 
-### Project Structure
+## 📂 Project Structure
 ```
 valentique-luxe-bag-store/
 ├── backend/
@@ -134,7 +134,7 @@ valentique-luxe-bag-store/
 
 ---
 
-## API Endpoints
+## 📡 API Endpoints
 ```
 Method	                    Endpoint	                Description
 POST	                    /api/auth/register	        Register a new user
@@ -154,7 +154,7 @@ POST	                    /api/orders	                Create a new order
 
 ---
 
-## Contributing
+## 🤝 Contributing
 * Contributions are welcome!
 * 1. Fork the project.
 * 2. Create your feature branch.
@@ -167,13 +167,9 @@ POST	                    /api/orders	                Create a new order
 
 ---
 
-## License
+## 📝 License
 * Distributed under the MIT License. See LICENSE for more information.
 
 ---
 
 <p align="center"> Built with ❤️ by Yash </p>
-
-
-
-
