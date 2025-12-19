@@ -70,10 +70,10 @@ cd backend
 npm install
 ```
 Create a .env file in the backend folder and add:
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRE=3650d
+* PORT=5000
+* MONGO_URI=your_mongodb_connection_string
+* JWT_SECRET=your_jwt_secret_key
+* JWT_EXPIRE=3650d
 
 Start the backend server:
 ```bash
@@ -88,15 +88,17 @@ npm install
 ```
 
 Create a src/config.js (or .env file) for configuration:
-export const API_URL = "http://localhost:5000";
+* export const API_URL = "http://localhost:5000";
 
 Start the frontend development server:
 ```bash
 npm run dev
 ```
 
-### Project Structure
+---
 
+### Project Structure
+```
 valentique-luxe-bag-store/
 ├── backend/
 │   ├── controllers/    # Route logic
@@ -128,3 +130,24 @@ valentique-luxe-bag-store/
     ├── App.jsx         # Entry point
     ├── vite.config.js  # Vite configuration
     └── main.jsx
+```
+
+---
+
+## API Endpoints
+```
+Method	                    Endpoint	                Description
+POST	                    /api/auth/register	        Register a new user
+POST	                    /api/auth/login	            Login user & get token
+GET	                        /api/products	            Get all products (with filters)
+GET	                        /api/products/:id	        Get single product details
+POST	                    /api/products	            Create a product (Admin only)
+PUT	                        /api/products/:id	        Update a product (Admin only)
+DELETE	                    /api/products/:id	        Delete a product (Admin only)
+POST	                    /api/cart	                Add item to cart
+GET                         /api/profile                Display user profile
+GET                         /api/admin/dashboard        Admin dashboard
+GET                         /api/admin/orders           Admin order management
+POST                        /api/admin/products         Admin product management
+POST	                    /api/orders	                Create a new order
+```
