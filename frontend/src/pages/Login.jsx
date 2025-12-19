@@ -6,7 +6,7 @@ import { Label } from "../components/ui/label";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../context/toastContext";
 
 const Login = () => {
   const { showToast } = useToast()

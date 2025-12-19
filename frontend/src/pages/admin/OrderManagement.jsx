@@ -15,7 +15,7 @@ import {
 import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
 import Loader from "../../components/common/Loader";
-import { useToast } from "../../context/ToastContext";
+import { useToast } from "../../context/toastContext";
 import { ordersAPI } from "../../services/api"; // Importing your defined API
 
 const OrderManagement = () => {

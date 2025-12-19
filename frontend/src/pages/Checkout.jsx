@@ -8,7 +8,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../context/toastContext';
 import { ordersAPI } from '../services/api';
 
 const Checkout = () => {

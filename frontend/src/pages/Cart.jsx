@@ -6,7 +6,7 @@ import Footer from '../components/layout/Footer';
 import CartItem from '../components/cart/CartItem';
 import { Button } from '../components/ui/button';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../context/toastContext';
 import Loader from '../components/common/Loader';
 
 const Cart = () => {

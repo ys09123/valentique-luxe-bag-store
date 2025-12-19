@@ -19,7 +19,7 @@ import { Button } from '../components/ui/button';
 import { productsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../context/toastContext';
 
 const ProductDetails = () => {
   const { id } = useParams();

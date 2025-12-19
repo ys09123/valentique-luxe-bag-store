@@ -16,7 +16,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { productsAPI } from '../../services/api';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../context/toastContext';
 import Loader from '../../components/common/Loader';
 
 const ProductManagement = () => {

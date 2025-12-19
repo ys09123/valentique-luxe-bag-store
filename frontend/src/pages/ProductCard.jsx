@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../context/toastContext';
 import { API_URL } from '../config';
 
 const ProductCard = ({ product }) => {

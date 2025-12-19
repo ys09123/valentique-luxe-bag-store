@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../context/toastContext';
 import { API_URL } from '../../config';
 
 const CartItem = ({ item }) => {
