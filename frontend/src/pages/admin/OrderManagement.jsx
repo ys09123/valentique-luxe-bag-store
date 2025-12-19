@@ -402,7 +402,7 @@ const OrderManagement = () => {
                             src={
                               item.image.startsWith("http")
                                 ? item.image
-                                : `${API_URL}${item.image}`
+                                : `${API_URL.replace('/api', '')}${item.image}`
                             }
                             alt={item.name}
                             className="w-full h-full object-cover"

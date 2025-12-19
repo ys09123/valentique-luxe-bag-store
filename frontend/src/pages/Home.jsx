@@ -197,7 +197,7 @@ const Home = () => {
                       <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 border border-white/5 hover:border-amber-500/20 transition-all">
                         <div className="aspect-square overflow-hidden">
                           <img
-                            src={`${API_URL}${product.images[0]}`}
+                            src={`${API_URL.replace('/api', '')}${product.images[0]}`}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />

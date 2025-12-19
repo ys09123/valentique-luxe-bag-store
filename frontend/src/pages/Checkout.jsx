@@ -273,7 +273,7 @@ const Checkout = () => {
                   {cart.items.map((item) => (
                     <div key={item._id} className="flex gap-3">
                       <img
-                        src={`${API_URL}${item.product.images[0]}`}
+                        src={`${API_URL.replace('/api', '')}${item.product.images[0]}`}
                         alt={item.product.name}
                         className="w-16 h-16 rounded-lg object-cover"
                       />

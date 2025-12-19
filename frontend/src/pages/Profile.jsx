@@ -425,7 +425,7 @@ const Profile = () => {
                                   {order.orderItems.map((item) => (
                                     <div key={item._id} className="flex gap-4">
                                       <img
-                                        src={`${API_URL}${item.image}`}
+                                        src={`${API_URL.replace('/api', '')}${item.image}`}
                                         alt={item.name}
                                         className="w-16 h-16 rounded-lg object-cover"
                                       />

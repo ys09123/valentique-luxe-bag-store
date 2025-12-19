@@ -40,7 +40,7 @@ const ProductCard = ({ product }) => {
           {/* Image Container */}
           <div className="relative aspect-square overflow-hidden bg-zinc-900">
             <img
-              src={`${API_URL}${product.images[0]}`}
+              src={`${API_URL.replace('/api', '')}${product.images[0]}`}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />

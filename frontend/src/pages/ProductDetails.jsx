@@ -110,7 +110,7 @@ const ProductDetails = () => {
               className="relative aspect-square rounded-2xl overflow-hidden bg-zinc-900 border border-white/5"
             >
               <img
-                src={`${API_URL}${product.images[selectedImage]}`}
+                src={`${API_URL.replace('/api', '')}${product.images[selectedImage]}`}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -148,7 +148,7 @@ const ProductDetails = () => {
                     }`}
                   >
                     <img
-                      src={`${API_URL}${image}`}
+                      src={`${API_URL.replace('/api', '')}${image}`}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

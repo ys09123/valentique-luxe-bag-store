@@ -11,10 +11,6 @@ node_modules/
 *.log
 npm-debug.log*
 
-# Uploads (images)
-uploads/*
-!uploads/.gitkeep
-
 # OS
 .DS_Store
 Thumbs.db

@@ -41,7 +41,7 @@ const CartItem = ({ item }) => {
       {/* Product Image */}
       <div className="shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-zinc-900">
         <img
-          src={`${API_URL}${item.product.images[0]}`}
+          src={`${API_URL.replace('/api', '')}${item.product.images[0]}`}
           alt={item.product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />

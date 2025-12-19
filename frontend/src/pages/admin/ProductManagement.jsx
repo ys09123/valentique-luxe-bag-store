@@ -88,7 +88,7 @@ const ProductManagement = () => {
         color: product.color,
         stock: product.stock,
       });
-      setImagePreviews(product.images.map(img => `${API_URL}${img}`));
+      setImagePreviews(product.images.map(img => `${API_URL.replace('/api', '')}${img}`));
     } else {
       setEditingProduct(null);
       setFormData({
