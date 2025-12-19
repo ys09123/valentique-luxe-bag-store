@@ -245,7 +245,7 @@ const ProductManagement = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={`${API_URL}${product.images[0]}`}
+                          src={`${API_URL.replace('/api', '')}${product.images[0]}`}
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
