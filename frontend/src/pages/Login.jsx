@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/toastContext";
 
 const Login = () => {
-  const { showToast } = useToast()
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,8 +37,7 @@ const Login = () => {
     if (result.success) {
       showToast(`Welcome back, ${result.user.name}!`, "success");
       navigate("/");
-    }
-    else {
+    } else {
       setError(result.message);
       showToast(result.message, "error");
     }
@@ -47,12 +46,23 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 p-4 relative overflow-hidden text-zinc-100">
-      
+      <button
+        type="button"
+        onClick={() =>
+          setFormData({
+            email: "test@example.com",
+            password: "123456", 
+          })
+        }
+        className="absolute z-50 top-4 right-4 px-3 py-1.5 text-[9px] md:top-8 md:right-8 md:px-5 md:py-2.5 md:text-[11px] bg-zinc-900/80 backdrop-blur-md border border-amber-500/20 text-white-500/80 uppercase tracking-[0.2em] rounded-full hover:bg-amber-500/10 hover:border-amber-500/50 hover:text-white-500 hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg shadow-black/20"
+      >
+        <span className="md:inline hidden">Fill with</span> demo credentials
+      </button>
       {/* 1. Ambient Background Effects */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-125 h-125 bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-125 h-125 bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -60,7 +70,7 @@ const Login = () => {
       >
         {/* Header */}
         <div className="text-center mb-10 space-y-2">
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -78,15 +88,16 @@ const Login = () => {
 
         {/* Form Card with Glassmorphism */}
         <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/5 p-8 rounded-2xl shadow-2xl relative overflow-hidden group">
-          
           {/* Subtle shimmer effect on card */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-            
             {/* Email Field */}
             <div className="space-y-2 group/input">
-              <Label htmlFor="email" className="text-[10px] tracking-[0.15em] uppercase text-zinc-500 group-focus-within/input:text-amber-500 transition-colors">
+              <Label
+                htmlFor="email"
+                className="text-[10px] tracking-[0.15em] uppercase text-zinc-500 group-focus-within/input:text-amber-500 transition-colors"
+              >
                 Email Address
               </Label>
               <div className="relative">
@@ -107,13 +118,15 @@ const Login = () => {
             {/* Password Field */}
             <div className="space-y-2 group/input">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password"
-                className="text-[10px] tracking-[0.15em] uppercase text-zinc-500 group-focus-within/input:text-amber-500 transition-colors">
+                <Label
+                  htmlFor="password"
+                  className="text-[10px] tracking-[0.15em] uppercase text-zinc-500 group-focus-within/input:text-amber-500 transition-colors"
+                >
                   Password
                 </Label>
                 <button
                   type="button"
-                  className="text-[10px] tracking-[0.1em] text-zinc-500 hover:text-amber-400 transition-colors uppercase cursor-pointer hover:underline"
+                  className="text-[10px] tracking-widest text-zinc-500 hover:text-amber-400 transition-colors uppercase cursor-pointer hover:underline"
                 >
                   Forgot Password?
                 </button>
@@ -135,20 +148,24 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-500 hover:text-white transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
 
             {/* Error Message Display */}
             {error && (
-                <motion.p 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="text-red-400 text-xs text-center tracking-wide bg-red-900/20 p-2 rounded border border-red-900/50"
-                >
-                    {error}
-                </motion.p>
+              <motion.p
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="text-red-400 text-xs text-center tracking-wide bg-red-900/20 p-2 rounded border border-red-900/50"
+              >
+                {error}
+              </motion.p>
             )}
 
             {/* Submit Button */}
@@ -169,9 +186,11 @@ const Login = () => {
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-8">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <span className="text-[10px] text-zinc-600 tracking-[0.2em] uppercase">or</span>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="flex-1 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+            <span className="text-[10px] text-zinc-600 tracking-[0.2em] uppercase">
+              or
+            </span>
+            <div className="flex-1 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
           </div>
 
           {/* Guest Button */}
@@ -188,8 +207,11 @@ const Login = () => {
         {/* Footer */}
         <p className="text-center text-xs text-zinc-500 mt-8 font-light tracking-wide">
           New here?{" "}
-          <Link to="/register" className="text-amber-500 hover:underline font-medium">
-              Sign up
+          <Link
+            to="/register"
+            className="text-amber-500 hover:underline font-medium"
+          >
+            Sign up
           </Link>
         </p>
       </motion.div>

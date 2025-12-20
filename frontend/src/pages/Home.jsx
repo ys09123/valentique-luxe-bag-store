@@ -14,8 +14,10 @@ const Home = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const response = await productsAPI.getFeatured();
-        setFeaturedProducts(response.data.products.slice(0, 3));
+        const response = await productsAPI.getAll();
+        if (response.data && response.data.products) {
+          setFeaturedProducts(response.data.products.slice(7, 10));
+        }
       } catch (error) {
         console.error('Error fetching featured products:', error);
       } finally {
@@ -199,6 +201,7 @@ const Home = () => {
                           <img
                             src={`${API_URL.replace('/api', '')}${product.images[0]}`}
                             alt={product.name}
+                            loading='lazy'
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         </div>
