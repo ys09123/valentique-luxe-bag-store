@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, Loader2, CheckCircle } from 'lucide-react';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { useCart } from '../context/CartContext';
-import { useToast } from '../context/toastContext';
-import { ordersAPI } from '../services/api';
-import { API_URL } from '../config'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft, CreditCard, Loader2, CheckCircle } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { useCart } from "../context/CartContext";
+import { useToast } from "../context/toastContext";
+import { ordersAPI } from "../services/api";
+import { API_URL } from "../config";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -20,17 +20,22 @@ const Checkout = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState({
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'India',
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "India",
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+
+  useEffect(() => {
+    if (!cart || cart.items.length === 0) {
+      navigate("/cart");
+    }
+  }, [cart, navigate]);
 
   if (!cart || cart.items.length === 0) {
-    navigate('/cart');
     return null;
   }
 
@@ -46,30 +51,133 @@ const Checkout = () => {
     });
   };
 
-  const handlePlaceOrder = async (e) => {
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const finalizeOrder = async () => {
+    setOrderPlaced(true);
+    showToast("Order placed successfully!", "success");
+    await clearCart();
+    setTimeout(() => {
+      navigate("/profile");
+    }, 3000);
+    setLoading(false);
+  };
+
+  const handleRazorpayPayment = async () => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+    if (!res) {
+      showToast("Razorpay SDK failed to load. Are you online?", "error");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const result = await fetch(`${API_URL}/payment/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total }),
+      });
+
+      const data = await result.json();
+
+      if (!data.id) {
+        showToast("Server error. Could not initiate payment.", "error");
+        setLoading(false);
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Valentique Luxe",
+        description: "Payment for Luxury Bag",
+        order_id: data.id,
+
+        handler: async function (response) {
+          try {
+            await ordersAPI.create({
+              shippingAddress,
+              paymentMethod: "Prepaid (Razorpay)",
+              paymentInfo: {
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              },
+              items: cart.items,
+              totalPrice: total,
+            });
+
+            await fetch(`${API_URL}/payment/verify-payment`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+
+            finalizeOrder();
+          } catch (err) {
+            console.error(err);
+            showToast("Payment successful but order creation failed.", "error");
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: "Valentique Customer",
+          email: "customer@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#F59E0B",
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+            showToast("Payment cancelled", "info");
+          },
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    } catch (error) {
+      console.error(error);
+      showToast("Something went wrong with payment.", "error");
+      setLoading(false);
+    }
+  };
+
+  const handlePlaceOrder = async (e) => { 
     e.preventDefault();
     setLoading(true);
 
     try {
-      await ordersAPI.create({
-        shippingAddress,
-        paymentMethod,
-      });
-
-      setOrderPlaced(true);
-      showToast('Order placed successfully!', 'success');
-
-      // Clear cart after successful order
-      await clearCart();
-
-      // Redirect to profile/orders after 3 seconds
-      setTimeout(() => {
-        navigate('/profile');
-      }, 3000);
+      if (paymentMethod === "Cash on Delivery") {
+        await ordersAPI.create({
+          shippingAddress,
+          paymentMethod,
+          items: cart.items,
+          totalPrice: total,
+        });
+        finalizeOrder();
+      } else {
+        await handleRazorpayPayment();
+      }
     } catch (error) {
-      console.error('Error placing order:', error);
-      showToast(error.response?.data?.message || 'Failed to place order', 'error');
-    } finally {
+      console.error("Error placing order:", error);
+      showToast(
+        error.response?.data?.message || "Failed to place order",
+        "error"
+      );
       setLoading(false);
     }
   };
@@ -107,7 +215,7 @@ const Checkout = () => {
       <main className="relative container mx-auto px-4 py-12">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/cart')}
+          onClick={() => navigate("/cart")}
           className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -140,7 +248,10 @@ const Checkout = () => {
 
                 <div className="space-y-5">
                   <div>
-                    <Label htmlFor="street" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="street"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Street Address
                     </Label>
                     <Input
@@ -156,7 +267,10 @@ const Checkout = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="city" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                      <Label
+                        htmlFor="city"
+                        className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                      >
                         City
                       </Label>
                       <Input
@@ -171,7 +285,10 @@ const Checkout = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="state" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                      <Label
+                        htmlFor="state"
+                        className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                      >
                         State
                       </Label>
                       <Input
@@ -188,7 +305,10 @@ const Checkout = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="zipCode" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                      <Label
+                        htmlFor="zipCode"
+                        className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                      >
                         Zip Code
                       </Label>
                       <Input
@@ -203,7 +323,10 @@ const Checkout = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="country" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                      <Label
+                        htmlFor="country"
+                        className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                      >
                         Country
                       </Label>
                       <Input
@@ -228,9 +351,8 @@ const Checkout = () => {
 
                 <div className="space-y-4">
                   {[
-                    { value: 'Cash on Delivery', icon: '💵' },
-                    { value: 'Card', icon: '💳' },
-                    { value: 'UPI', icon: '📱' },
+                    { value: "Cash on Delivery", icon: "💵" },
+                    { value: "Prepaid using Razorpay", icon: "📱" },
                   ].map((method) => (
                     <button
                       key={method.value}
@@ -238,26 +360,20 @@ const Checkout = () => {
                       onClick={() => setPaymentMethod(method.value)}
                       className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 hover:cursor-pointer ${
                         paymentMethod === method.value
-                          ? 'border-amber-500 bg-amber-500/5'
-                          : 'border-white/10 hover:border-white/20'
+                          ? "border-amber-500 bg-amber-500/5"
+                          : "border-white/10 hover:border-white/20"
                       }`}
                     >
                       <span className="text-2xl">{method.icon}</span>
-                      <span className="text-white font-light">{method.value}</span>
+                      <span className="text-white font-light">
+                        {method.value}
+                      </span>
                       {paymentMethod === method.value && (
                         <CheckCircle className="h-5 w-5 text-amber-500 ml-auto" />
                       )}
                     </button>
                   ))}
                 </div>
-
-                {paymentMethod !== 'Cash on Delivery' && (
-                  <div className="mt-6 p-4 bg-zinc-800/50 border border-white/5 rounded-xl">
-                    <p className="text-sm text-zinc-400">
-                      Payment gateway integration coming soon. Please use Cash on Delivery for now.
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -273,7 +389,9 @@ const Checkout = () => {
                   {cart.items.map((item) => (
                     <div key={item._id} className="flex gap-3">
                       <img
-                        src={`${API_URL.replace('/api', '')}${item.product.images[0]}`}
+                        src={`${API_URL.replace("/api", "")}${
+                          item.product.images[0].startsWith("/") ? "" : "/"
+                        }${item.product.images[0]}`}
                         alt={item.product.name}
                         className="w-16 h-16 rounded-lg object-cover"
                       />
@@ -293,7 +411,9 @@ const Checkout = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
                     <span className="text-zinc-500">Subtotal</span>
-                    <span className="text-white">₹{subtotal.toLocaleString()}</span>
+                    <span className="text-white">
+                      ₹{subtotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-zinc-500">Shipping</span>
@@ -321,7 +441,7 @@ const Checkout = () => {
                 {/* Place Order Button */}
                 <Button
                   type="submit"
-                  disabled={loading || paymentMethod !== 'Cash on Delivery'}
+                  disabled={loading}
                   className="w-full h-14 bg-white text-black hover:bg-zinc-200 font-medium text-sm tracking-[0.2em] uppercase rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:cursor-pointer"
                 >
                   {loading ? (
@@ -332,7 +452,9 @@ const Checkout = () => {
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4" />
-                      Place Order
+                      {paymentMethod === "Cash on Delivery"
+                        ? "Place COD Order"
+                        : "Pay Now"}
                     </>
                   )}
                 </Button>
