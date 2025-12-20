@@ -5,14 +5,13 @@ import Razorpay from 'razorpay';
 
 const router = express.Router();
 
-const instance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 // CREATE ORDER
 router.post("/create-order", async (req, res) => {
   try {
+    const instance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
     const { amount } = req.body;
 
     if (!amount || amount <= 0) {
