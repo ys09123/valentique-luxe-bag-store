@@ -11,6 +11,7 @@ A premium e-commerce platform for luxury bags, built with the **MERN Stack** (Mo
 
 ### 👤 User Features
 * **Authentication:** Secure Login & Registration (JWT-based).
+* **Checkout:** Payment gateway integration through Razorpay API.
 * **Product Browsing:** Filter products by category, price, brand, and material.
 * **Search:** Real-time search functionality.
 * **Shopping Cart:** Add/remove items, adjust quantities, and view totals.
@@ -234,5 +235,6 @@ POST	                    /api/orders	                Create a new order
 ---
 
 <p align="center"> Built with ❤️ by Yash </p>
+
 
 
