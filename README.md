@@ -103,6 +103,7 @@ A premium e-commerce platform for luxury bags, built with the **MERN Stack** (Mo
 * **Multer:** File uploads.
 * **JWT (JSON Web Tokens):** Authentication security.
 * **Bcrypt:** Password hashing.
+* **Cloudinary:** Upload images.
 
 ### Deployment
 * **Frontend:** Vercel
@@ -235,6 +236,7 @@ POST	                    /api/orders	                Create a new order
 ---
 
 <p align="center"> Built with ❤️ by Yash </p>
+
 
 
 
