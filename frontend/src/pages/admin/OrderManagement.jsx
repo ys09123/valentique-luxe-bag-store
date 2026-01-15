@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_URL } from "../../config";
 import {
   Search,
   Filter,
@@ -16,7 +15,8 @@ import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
 import Loader from "../../components/common/Loader";
 import { useToast } from "../../context/toastContext";
-import { ordersAPI } from "../../services/api"; // Importing your defined API
+import { ordersAPI } from "../../services/api";
+import { API_URL } from "../../config";
 
 const OrderManagement = () => {
   const { showToast } = useToast();
@@ -103,7 +103,7 @@ const OrderManagement = () => {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar />
 
-      {/* Ambient Background (Same as ProductManagement) */}
+      {/* Ambient Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-125 h-125 bg-purple-900/10 rounded-full blur-[120px]" />
       </div>
@@ -398,11 +398,12 @@ const OrderManagement = () => {
                     >
                       <div className="h-16 w-16 rounded-lg overflow-hidden bg-zinc-800 border border-white/5 shrink-0">
                         {item.image ? (
+                          /* 👇 2. FIX: Hybrid Image Check */
                           <img
                             src={
-                              item.image.startsWith("http")
-                                ? item.image
-                                : `${API_URL.replace('/api', '')}${item.image}`
+                              item.image?.url 
+                                ? item.image.url 
+                                : `${API_URL}${item.image}`
                             }
                             alt={item.name}
                             className="w-full h-full object-cover"

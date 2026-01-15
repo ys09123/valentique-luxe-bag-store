@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/toastContext';
-import { API_URL } from '../../config';
 
 const CartItem = ({ item }) => {
   const { updateCartItem, removeFromCart } = useCart();
@@ -41,7 +40,7 @@ const CartItem = ({ item }) => {
       {/* Product Image */}
       <div className="shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-zinc-900">
         <img
-          src={`${API_URL.replace('/api', '')}${item.product.images[0]}`}
+          src={item.product.images[0]?.url}
           alt={item.product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />

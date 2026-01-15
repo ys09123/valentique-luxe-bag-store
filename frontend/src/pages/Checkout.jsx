@@ -156,7 +156,7 @@ const Checkout = () => {
     }
   };
 
-  const handlePlaceOrder = async (e) => { 
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -388,19 +388,20 @@ const Checkout = () => {
                 <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
                   {cart.items.map((item) => (
                     <div key={item._id} className="flex gap-3">
+                      <div className="flex flex-col items-center">
                       <img
-                        src={`${API_URL.replace("/api", "")}${
-                          item.product.images[0].startsWith("/") ? "" : "/"
-                        }${item.product.images[0]}`}
+                        src={item.product.images[0]?.url}
                         alt={item.product.name}
-                        className="w-16 h-16 rounded-lg object-cover"
+                        className="w-20 h-20 object-cover rounded-md"
                       />
-                      <div className="flex-1">
-                        <p className="text-sm text-white font-light line-clamp-1">
-                          {item.product.name}
-                        </p>
+                        
                         <p className="text-xs text-zinc-500">
                           Qty: {item.quantity} × ₹{item.price.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="flex-1">
+                      <p className="text-sm text-white font-light line-clamp-2">
+                          {item.product.name}
                         </p>
                       </div>
                     </div>

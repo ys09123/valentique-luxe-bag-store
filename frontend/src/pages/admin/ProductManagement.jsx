@@ -1,23 +1,15 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { API_URL } from '../../config';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  X, 
-  Upload,
-  Search,
-  Package 
-} from 'lucide-react';
-import Navbar from '../../components/layout/Navbar';
-import Footer from '../../components/layout/Footer';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { productsAPI } from '../../services/api';
-import { useToast } from '../../context/toastContext';
-import Loader from '../../components/common/Loader';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Edit, Trash2, X, Upload, Search, Package } from "lucide-react";
+import Navbar from "../../components/layout/Navbar";
+import Footer from "../../components/layout/Footer";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { productsAPI } from "../../services/api";
+import { useToast } from "../../context/toastContext";
+import Loader from "../../components/common/Loader";
+import { API_URL } from "../../config";
 
 const ProductManagement = () => {
   const { showToast } = useToast();
@@ -25,18 +17,18 @@ const ProductManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    brand: '',
-    category: 'Handbag',
-    material: 'Leather',
-    color: '',
-    stock: '',
+    name: "",
+    description: "",
+    price: "",
+    brand: "",
+    category: "Handbag",
+    material: "Leather",
+    color: "",
+    stock: "",
   });
 
   const [imageFiles, setImageFiles] = useState([]);
@@ -52,8 +44,8 @@ const ProductManagement = () => {
       const response = await productsAPI.getAll();
       setProducts(response.data.products);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      showToast('Failed to fetch products', 'error');
+      console.error("Error fetching products:", error);
+      showToast("Failed to fetch products", "error");
     } finally {
       setLoading(false);
     }
@@ -71,7 +63,7 @@ const ProductManagement = () => {
     setImageFiles(files);
 
     // Create preview URLs
-    const previews = files.map(file => URL.createObjectURL(file));
+    const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
   };
 
@@ -88,18 +80,24 @@ const ProductManagement = () => {
         color: product.color,
         stock: product.stock,
       });
-      setImagePreviews(product.images.map(img => `${API_URL.replace('/api', '')}${img}`));
+
+      // 👇 2. FIX: Hybrid Image Preview (Handles Objects & Strings)
+      setImagePreviews(
+        product.images.map((img) => 
+          img?.url ? img.url : `${API_URL}${img}`
+        )
+      );
     } else {
       setEditingProduct(null);
       setFormData({
-        name: '',
-        description: '',
-        price: '',
-        brand: '',
-        category: 'Handbag',
-        material: 'Leather',
-        color: '',
-        stock: '',
+        name: "",
+        description: "",
+        price: "",
+        brand: "",
+        category: "Handbag",
+        material: "Leather",
+        color: "",
+        stock: "",
       });
       setImageFiles([]);
       setImagePreviews([]);
@@ -120,53 +118,58 @@ const ProductManagement = () => {
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Append text fields
-      Object.keys(formData).forEach(key => {
+      Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
 
       // Append images
-      imageFiles.forEach(file => {
-        formDataToSend.append('images', file);
+      imageFiles.forEach((file) => {
+        formDataToSend.append("images", file);
       });
 
       if (editingProduct) {
         // Update product
         await productsAPI.update(editingProduct._id, formDataToSend);
-        showToast('Product updated successfully', 'success');
+        showToast("Product updated successfully", "success");
       } else {
         // Create product
         await productsAPI.create(formDataToSend);
-        showToast('Product created successfully', 'success');
+        showToast("Product created successfully", "success");
       }
 
       fetchProducts();
       closeModal();
     } catch (error) {
-      console.error('Error saving product:', error);
-      showToast(error.response?.data?.message || 'Failed to save product', 'error');
+      console.error("Error saving product:", error);
+      showToast(
+        error.response?.data?.message || "Failed to save product",
+        "error"
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
     try {
       await productsAPI.delete(id);
-      showToast('Product deleted successfully', 'success');
+      showToast("Product deleted successfully", "success");
       fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      showToast('Failed to delete product', 'error');
+      console.error("Error deleting product:", error);
+      showToast("Failed to delete product", "error");
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.brand.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) return <Loader />;
@@ -241,32 +244,54 @@ const ProductManagement = () => {
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
-                  <tr key={product._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <tr
+                    key={product._id}
+                    className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={`${API_URL.replace('/api', '')}${product.images[0]}`}
+                          src={
+                            product.images[0]?.url 
+                              ? product.images[0].url 
+                              : `${API_URL}${product.images[0]}`
+                          }
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
+
                         <div>
-                          <p className="text-sm text-white font-medium">{product.name}</p>
-                          <p className="text-xs text-zinc-500">{product.material}</p>
+                          <p className="text-sm text-white font-medium">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-zinc-500">
+                            {product.material}
+                          </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-zinc-400">{product.brand}</td>
-                    <td className="px-6 py-4 text-sm text-white">₹{product.price.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm text-zinc-400">
+                      {product.brand}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-white">
+                      ₹{product.price.toLocaleString()}
+                    </td>
                     <td className="px-6 py-4">
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        product.stock > 10 ? 'bg-emerald-500/20 text-emerald-400' :
-                        product.stock > 0 ? 'bg-amber-500/20 text-amber-400' :
-                        'bg-red-500/20 text-red-400'
-                      }`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${
+                          product.stock > 10
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : product.stock > 0
+                            ? "bg-amber-500/20 text-amber-400"
+                            : "bg-red-500/20 text-red-400"
+                        }`}
+                      >
                         {product.stock} units
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-zinc-400">{product.category}</td>
+                    <td className="px-6 py-4 text-sm text-zinc-400">
+                      {product.category}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -309,7 +334,7 @@ const ProductManagement = () => {
               onClick={closeModal}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
-            
+
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -318,7 +343,7 @@ const ProductManagement = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-light text-white">
-                  {editingProduct ? 'Edit Product' : 'Add New Product'}
+                  {editingProduct ? "Edit Product" : "Add New Product"}
                 </h2>
                 <button
                   onClick={closeModal}
@@ -331,7 +356,10 @@ const ProductManagement = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
                 <div>
-                  <Label htmlFor="name" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                  <Label
+                    htmlFor="name"
+                    className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                  >
                     Product Name
                   </Label>
                   <Input
@@ -347,7 +375,10 @@ const ProductManagement = () => {
 
                 {/* Description */}
                 <div>
-                  <Label htmlFor="description" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                  <Label
+                    htmlFor="description"
+                    className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                  >
                     Description
                   </Label>
                   <textarea
@@ -365,7 +396,10 @@ const ProductManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Price */}
                   <div>
-                    <Label htmlFor="price" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="price"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Price
                     </Label>
                     <Input
@@ -382,7 +416,10 @@ const ProductManagement = () => {
 
                   {/* Brand */}
                   <div>
-                    <Label htmlFor="brand" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="brand"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Brand
                     </Label>
                     <Input
@@ -400,7 +437,10 @@ const ProductManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Category */}
                   <div>
-                    <Label htmlFor="category" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="category"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Category
                     </Label>
                     <select
@@ -421,7 +461,10 @@ const ProductManagement = () => {
 
                   {/* Material */}
                   <div>
-                    <Label htmlFor="material" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="material"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Material
                     </Label>
                     <select
@@ -445,7 +488,10 @@ const ProductManagement = () => {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Color */}
                   <div>
-                    <Label htmlFor="color" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="color"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Color
                     </Label>
                     <Input
@@ -461,7 +507,10 @@ const ProductManagement = () => {
 
                   {/* Stock */}
                   <div>
-                    <Label htmlFor="stock" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                    <Label
+                      htmlFor="stock"
+                      className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                    >
                       Stock
                     </Label>
                     <Input
@@ -479,14 +528,21 @@ const ProductManagement = () => {
 
                 {/* Images */}
                 <div>
-                  <Label htmlFor="images" className="text-xs tracking-wider text-zinc-500 uppercase mb-2">
+                  <Label
+                    htmlFor="images"
+                    className="text-xs tracking-wider text-zinc-500 uppercase mb-2"
+                  >
                     Product Images
                   </Label>
                   <div className="mt-2">
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-amber-500/50 transition-all">
                       <Upload className="h-8 w-8 text-zinc-500 mb-2" />
-                      <span className="text-sm text-zinc-500">Click to upload images</span>
-                      <span className="text-xs text-zinc-600 mt-1">PNG, JPG up to 5MB (Max 5 images)</span>
+                      <span className="text-sm text-zinc-500">
+                        Click to upload images
+                      </span>
+                      <span className="text-xs text-zinc-600 mt-1">
+                        PNG, JPG up to 5MB (Max 5 images)
+                      </span>
                       <input
                         id="images"
                         type="file"
@@ -518,16 +574,20 @@ const ProductManagement = () => {
                   <Button
                     type="button"
                     onClick={closeModal}
-                    className="flex-1 bg-transparent border border-white/10 text-white hover:bg-white/5"
+                    className="flex-1 cursor-pointer bg-transparent border border-white/10 text-white hover:bg-white/5"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-white text-black hover:bg-zinc-200"
+                    className="flex-1 cursor-pointer bg-white text-black hover:bg-zinc-200"
                   >
-                    {submitting ? 'Saving...' : (editingProduct ? 'Update Product' : 'Create Product')}
+                    {submitting
+                      ? "Saving..."
+                      : editingProduct
+                      ? "Update Product"
+                      : "Create Product"}
                   </Button>
                 </div>
               </form>

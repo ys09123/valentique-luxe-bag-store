@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { API_URL } from '../config';
 import { 
   ShoppingCart, 
   Heart, 
@@ -20,6 +19,7 @@ import { productsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/toastContext';
+import { API_URL } from '../config';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -110,7 +110,11 @@ const ProductDetails = () => {
               className="relative aspect-square rounded-2xl overflow-hidden bg-zinc-900 border border-white/5"
             >
               <img
-                src={`${API_URL.replace('/api', '')}${product.images[selectedImage]}`}
+                src={
+                  product.images[selectedImage]?.url 
+                    ? product.images[selectedImage].url 
+                    : `${API_URL}${product.images[selectedImage]}`
+                }
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -148,7 +152,11 @@ const ProductDetails = () => {
                     }`}
                   >
                     <img
-                      src={`${API_URL.replace('/api', '')}${image}`}
+                      src={
+                        image?.url 
+                          ? image.url 
+                          : `${API_URL}${image}`
+                      }
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -226,7 +234,7 @@ const ProductDetails = () => {
                 <div className="flex items-center border border-white/10 rounded-lg overflow-hidden">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-3 text-white hover:bg-white/5 transition-all"
+                    className="px-4 py-3 cursor-pointer text-white hover:bg-white/5 transition-all"
                   >
                     -
                   </button>
@@ -234,7 +242,7 @@ const ProductDetails = () => {
                   <button
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                     disabled={quantity >= product.stock}
-                    className="px-4 py-3 text-white hover:bg-white/5 transition-all disabled:opacity-50"
+                    className="px-4 py-3 cursor-pointer text-white hover:bg-white/5 transition-all disabled:opacity-50"
                   >
                     +
                   </button>

@@ -48,7 +48,7 @@ export const createOrder = async (req, res) => {
       name: item.product.name,
       quantity: item.quantity,
       price: item.price,
-      image: item.product.images?.[0] || '',
+      image: item.product.images?.[0]?.url || '',
     }))
 
     // Calculate prices
@@ -194,7 +194,7 @@ export const updateOrderStatus = async (req, res) => {
     // If delivered, set deliveredAt date
     if (orderStatus === 'Delivered') {
       order.deliveredAt = Date.now();
-      order.paymentStatus = 'Paid'; // Assume paid on delivery
+      order.paymentStatus = 'Paid';
     }
 
     await order.save();

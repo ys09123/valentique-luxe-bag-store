@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Shield, Truck } from 'lucide-react';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import { useEffect, useState } from 'react';
-import { productsAPI } from '../services/api';
-import { API_URL } from '../config';
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, Shield, Truck } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import { useEffect, useState } from "react";
+import { productsAPI } from "../services/api";
+// 👇 1. IMPORT API_URL
+import { API_URL } from "../config";
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -16,10 +17,11 @@ const Home = () => {
       try {
         const response = await productsAPI.getAll();
         if (response.data && response.data.products) {
-          setFeaturedProducts(response.data.products.slice(7, 10));
+          // Adjust slice based on how many featured items you want
+          setFeaturedProducts(response.data.products.slice(0, 3));
         }
       } catch (error) {
-        console.error('Error fetching featured products:', error);
+        console.error("Error fetching featured products:", error);
       } finally {
         setLoading(false);
       }
@@ -31,7 +33,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <Navbar />
-      
+
       {/* Ambient Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-125 h-125 bg-purple-900/10 rounded-full blur-[120px]" />
@@ -49,17 +51,14 @@ const Home = () => {
               playsInline
               className="w-full h-full object-cover opacity-60"
             >
-              <source 
-                src="/videos/hero2.mp4" 
-                type="video/mp4" 
-              />
+              <source src="/videos/hero2.mp4" type="video/mp4" />
             </video>
-          
+
             <div className="absolute inset-0 bg-linear-to-b from-zinc-950/30 via-zinc-950/60 to-zinc-950" />
           </div>
 
           {/* --- CONTENT LAYER --- */}
-          <div className="container mx-auto px-4 text-center relative z-10 mt-20"> 
+          <div className="container mx-auto px-4 text-center relative z-10 mt-20">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -83,8 +82,9 @@ const Home = () => {
               </h1>
 
               <p className="text-lg text-zinc-300 max-w-2xl mx-auto mb-12 font-light tracking-wide text-shadow-sm">
-                Experience the pinnacle of luxury with our handpicked collection of designer bags. 
-                Each piece tells a story of craftsmanship and timeless sophistication.
+                Experience the pinnacle of luxury with our handpicked collection
+                of designer bags. Each piece tells a story of craftsmanship and
+                timeless sophistication.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -95,7 +95,7 @@ const Home = () => {
                   Explore Collection
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                
+
                 <Link
                   to="/products"
                   className="px-8 py-4 bg-transparent border border-white/20 text-white rounded-xl text-sm font-medium tracking-[0.2em] uppercase hover:bg-white/10 hover:border-white/40 transition-all backdrop-blur-sm"
@@ -114,7 +114,9 @@ const Home = () => {
             className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
           >
             <div className="flex flex-col items-center gap-2 text-zinc-400">
-              <span className="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+              <span className="text-[10px] tracking-[0.3em] uppercase">
+                Scroll
+              </span>
               <motion.div
                 animate={{ y: [0, 8, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -131,19 +133,20 @@ const Home = () => {
               {[
                 {
                   icon: Sparkles,
-                  title: 'Authentic Luxury',
-                  description: '100% genuine designer pieces'
+                  title: "Authentic Luxury",
+                  description: "100% genuine designer pieces",
                 },
                 {
                   icon: Shield,
-                  title: 'Secure Shopping',
-                  description: 'Protected transactions and encrypted payment processing'
+                  title: "Secure Shopping",
+                  description:
+                    "Protected transactions and encrypted payment processing",
                 },
                 {
                   icon: Truck,
-                  title: 'Express Delivery',
-                  description: 'Complimentary shipping on orders above ₹4,999'
-                }
+                  title: "Express Delivery",
+                  description: "Complimentary shipping on orders above ₹4,999",
+                },
               ].map((feature, index) => (
                 <motion.div
                   key={index}
@@ -198,10 +201,15 @@ const Home = () => {
                     >
                       <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 border border-white/5 hover:border-amber-500/20 transition-all">
                         <div className="aspect-square overflow-hidden">
+                          {/* 👇 2. FIX: Hybrid Image Check */}
                           <img
-                            src={`${API_URL.replace('/api', '')}${product.images[0]}`}
+                            src={
+                              product.images[0]?.url 
+                                ? product.images[0].url 
+                                : `${API_URL}${product.images[0]}`
+                            }
                             alt={product.name}
-                            loading='lazy'
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         </div>
