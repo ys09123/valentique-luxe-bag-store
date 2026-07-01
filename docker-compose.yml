@@ -1,13 +1,4 @@
 services:
-  mongo:
-    image: mongo:7
-    container_name: valentique-mongo
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
   backend:
     build:
       context: ./backend
@@ -15,15 +6,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./backend/.env
-    environment:
-      # Overrides .env so the backend always finds the compose-managed Mongo.
-      # Remove this line if you want to use Atlas / an external Mongo URI instead.
-      MONGO_URI: mongodb://mongo:27017/valentique
-      PORT: 5000
     ports:
       - "5000:5000"
-    depends_on:
-      - mongo
     volumes:
       - backend-uploads:/app/uploads
 
@@ -40,5 +24,4 @@ services:
       - backend
 
 volumes:
-  mongo-data:
   backend-uploads:
