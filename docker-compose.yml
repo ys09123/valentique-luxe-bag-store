@@ -1,7 +1,6 @@
 services:
   backend:
-    build:
-      context: ./backend
+    image: hughie007/valentique-backend:latest
     container_name: valentique-backend
     restart: unless-stopped
     env_file:
@@ -12,10 +11,7 @@ services:
       - backend-uploads:/app/uploads
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:5000/api
+    image: hughie007/valentique-frontend:latest
     container_name: valentique-frontend
     restart: unless-stopped
     ports:
