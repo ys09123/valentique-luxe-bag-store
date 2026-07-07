@@ -122,7 +122,7 @@ Follow these steps to run the project locally on your machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/09123/valentique-luxe-bag-store.git
+git clone https://github.com/ys09123/valentique-luxe-bag-store.git
 cd valentique-luxe-bag-store
 ```
 
