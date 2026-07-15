@@ -5,10 +5,15 @@ services:
     restart: unless-stopped
     env_file:
       - ./backend/.env
+    # Override CHROMA_URL so it points to the chroma service, not localhost
+    environment:
+      CHROMA_URL: http://chroma:8000
     ports:
       - "5000:5000"
     volumes:
       - backend-uploads:/app/uploads
+    depends_on:
+      - chroma
 
   frontend:
     image: hughie007/valentique-frontend:latest
@@ -19,5 +24,15 @@ services:
     depends_on:
       - backend
 
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: valentique-chroma
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
 volumes:
   backend-uploads:
+  chroma_data:
