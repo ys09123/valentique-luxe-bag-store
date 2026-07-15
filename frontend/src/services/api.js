@@ -79,4 +79,10 @@ export const adminAPI = {
   updateUserRole: (id, data) => api.put(`/admin/users/${id}/role`, data),
 }
 
+// AI Chat API
+export const aiAPI = {
+  chat: (data) => api.post('/ai/chat', data),
+  clearHistory: (conversationId) => api.delete(`/ai/chat/${conversationId}`),
+}
+
 export default api

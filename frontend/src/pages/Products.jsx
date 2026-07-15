@@ -74,7 +74,7 @@ const Products = () => {
         <div className="absolute bottom-0 left-0 w-125 h-125 bg-amber-600/10 rounded-full blur-[120px]" />
       </div>
 
-      <main className="relative container mx-auto px-4 py-12">
+      <main className="relative container mx-auto px-4 py-38">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.p
@@ -122,7 +122,7 @@ const Products = () => {
             {showFilters && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
@@ -148,12 +148,16 @@ const Products = () => {
                       </label>
                       <select
                         value={filters.category}
-                        onChange={(e) => handleFilterChange('category', e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("category", e.target.value)
+                        }
                         className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50 cursor-pointer"
                       >
                         <option value="">All Categories</option>
                         {categories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -165,12 +169,16 @@ const Products = () => {
                       </label>
                       <select
                         value={filters.material}
-                        onChange={(e) => handleFilterChange('material', e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("material", e.target.value)
+                        }
                         className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50 cursor-pointer"
                       >
                         <option value="">All Materials</option>
                         {materials.map((mat) => (
-                          <option key={mat} value={mat}>{mat}</option>
+                          <option key={mat} value={mat}>
+                            {mat}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -184,7 +192,9 @@ const Products = () => {
                         type="number"
                         placeholder="₹0"
                         value={filters.minPrice}
-                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("minPrice", e.target.value)
+                        }
                         className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50"
                       />
                     </div>
@@ -197,7 +207,9 @@ const Products = () => {
                         type="number"
                         placeholder="₹10000"
                         value={filters.maxPrice}
-                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                        onChange={(e) =>
+                          handleFilterChange("maxPrice", e.target.value)
+                        }
                         className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-amber-500/50"
                       />
                     </div>
@@ -210,18 +222,20 @@ const Products = () => {
                     </label>
                     <div className="flex gap-2 flex-wrap">
                       {[
-                        { value: 'newest', label: 'Newest' },
-                        { value: 'price-asc', label: 'Price: Low to High' },
-                        { value: 'price-desc', label: 'Price: High to Low' },
-                        { value: 'name', label: 'Name' },
+                        { value: "newest", label: "Newest" },
+                        { value: "price-asc", label: "Price: Low to High" },
+                        { value: "price-desc", label: "Price: High to Low" },
+                        { value: "name", label: "Name" },
                       ].map((option) => (
                         <button
                           key={option.value}
-                          onClick={() => handleFilterChange('sort', option.value)}
+                          onClick={() =>
+                            handleFilterChange("sort", option.value)
+                          }
                           className={`px-4 py-2 rounded-lg text-xs font-medium tracking-wide transition-all ${
                             filters.sort === option.value
-                              ? 'bg-amber-500 text-black'
-                              : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                              ? "bg-amber-500 text-black"
+                              : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
                           }`}
                         >
                           {option.label}
@@ -238,7 +252,9 @@ const Products = () => {
         {/* Results Count */}
         <div className="mb-8">
           <p className="text-sm text-zinc-500">
-            Showing <span className="text-white font-medium">{products.length}</span> products
+            Showing{" "}
+            <span className="text-white font-medium">{products.length}</span>{" "}
+            products
           </p>
         </div>
 

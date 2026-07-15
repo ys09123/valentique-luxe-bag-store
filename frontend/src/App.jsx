@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ToastProvider } from "./context/toastContext";
 import PrivateRoute from "./components/common/PrivateRoute";
+import AIChatWidget from "./components/ai/AIChatWidget";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -83,6 +84,7 @@ function App() {
                 }
               />
             </Routes>
+            <AIChatWidget />
           </ToastProvider>
         </CartProvider>
         <Analytics />

@@ -94,7 +94,9 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3 text-sm text-zinc-400">
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
-                <span>123 Park Street<br />Kolkata, West Bengal 700001</span>
+                <span>1794 Liberty Street<br/>
+                Kolkata, WB
+                </span>
               </li>
             </ul>
           </div>

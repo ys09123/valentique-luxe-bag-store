@@ -9,6 +9,7 @@ import {
 } from '../controllers/productController.js'
 import { protect, admin } from '../middleware/auth.js'
 import upload from '../middleware/upload.js'
+// import { getSuggestions } from '../controllers/productController.js'
 
 const router = express.Router()
 
@@ -16,6 +17,7 @@ const router = express.Router()
 router.get('/', getProducts)
 router.get('/featured', getFeaturedProducts)
 router.get('/:id', getProductById)
+// router.get('/suggestions', getSuggestions);
 
 // Admin Routes (Protected)
 router.post(

@@ -1,5 +1,5 @@
-import Product from '../models/Product.js';
-import { v2 as cloudinary } from 'cloudinary';
+import Product from "../models/Product.js";
+import { v2 as cloudinary } from "cloudinary";
 
 /**
  * GET /api/products
@@ -25,7 +25,7 @@ export const getProducts = async (req, res) => {
     if (category) query.category = category;
     if (brand) query.brand = brand;
     if (material) query.material = material;
-    if (color) query.color = { $regex: color, $options: 'i' };
+    if (color) query.color = { $regex: color, $options: "i" };
 
     if (minPrice || maxPrice) {
       query.price = {};
@@ -34,10 +34,10 @@ export const getProducts = async (req, res) => {
     }
 
     let sortOption = { createdAt: -1 };
-    if (sort === 'price-asc') sortOption = { price: 1 };
-    if (sort === 'price-desc') sortOption = { price: -1 };
-    if (sort === 'oldest') sortOption = { createdAt: 1 };
-    if (sort === 'name') sortOption = { name: 1 };
+    if (sort === "price-asc") sortOption = { price: 1 };
+    if (sort === "price-desc") sortOption = { price: -1 };
+    if (sort === "oldest") sortOption = { createdAt: 1 };
+    if (sort === "name") sortOption = { name: 1 };
 
     const pageNum = Number(page);
     const limitNum = Number(limit);
@@ -70,8 +70,7 @@ export const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
-    if (!product)
-      return res.status(404).json({ message: 'Product not found' });
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     res.json({ success: true, product });
   } catch (error) {
@@ -100,8 +99,8 @@ export const createProduct = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       images = req.files.map((file) => ({
-        url: file.path,         
-        public_id: file.filename 
+        url: file.path,
+        public_id: file.filename,
       }));
     }
 
@@ -114,13 +113,13 @@ export const createProduct = async (req, res) => {
       material,
       color,
       stock,
-      images, 
+      images,
       dimensions,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Product created successfully',
+      message: "Product created successfully",
       product,
     });
   } catch (error) {
@@ -136,8 +135,7 @@ export const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
-    if (!product)
-      return res.status(404).json({ message: 'Product not found' });
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     const {
       name,
@@ -167,7 +165,7 @@ export const updateProduct = async (req, res) => {
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map((file) => ({
         url: file.path,
-        public_id: file.filename
+        public_id: file.filename,
       }));
       product.images.push(...newImages);
     }
@@ -176,7 +174,7 @@ export const updateProduct = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Product updated successfully',
+      message: "Product updated successfully",
       product: updatedProduct,
     });
   } catch (error) {
@@ -191,8 +189,7 @@ export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 
-    if (!product)
-      return res.status(404).json({ message: 'Product not found' });
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     if (product.images && product.images.length > 0) {
       for (const img of product.images) {
@@ -206,7 +203,7 @@ export const deleteProduct = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Product deleted successfully',
+      message: "Product deleted successfully",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -229,3 +226,26 @@ export const getFeaturedProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/*
+  GET /api/products/suggestions?q=lea
+*/
+// export const getSuggestions = async (req, res) => {
+//   try {
+//     const { q } = req.query;
+//     if(!q) return res.json([]);
+
+//     const suggestions = await Product.find({
+//       name: { $regex: q, $options: "i"}
+//     })
+//       .select("name")
+//       .limit(10);
+
+//     res.status(200).json(suggestions);
+//   } catch(error) {
+//     console.error(error);
+//     res.status(500).json({
+//       message: "Error fetching suggestions"
+//     })
+//   }
+// };

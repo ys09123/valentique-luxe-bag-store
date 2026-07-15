@@ -95,13 +95,6 @@ const Home = () => {
                   Explore Collection
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-
-                <Link
-                  to="/products"
-                  className="px-8 py-4 bg-transparent border border-white/20 text-white rounded-xl text-sm font-medium tracking-[0.2em] uppercase hover:bg-white/10 hover:border-white/40 transition-all backdrop-blur-sm"
-                >
-                  View Catalog
-                </Link>
               </div>
             </motion.div>
           </div>
