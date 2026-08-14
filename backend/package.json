@@ -31,7 +31,9 @@
     "mongoose": "^8.0.0",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
-    "razorpay": "^2.9.6"
+    "nodemailer": "^9.0.5",
+    "razorpay": "^2.9.6",
+    "redis": "^6.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

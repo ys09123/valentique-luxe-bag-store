@@ -39,6 +39,12 @@ export const authAPI = {
   updateProfile: (data) => api.put('/auth/profile', data),
 }
 
+// OTP Auth API
+export const otpAPI = {
+  sendOtp: (email) => api.post('/auth/send-otp', { email }),
+  verifyOtp: (email, otp) => api.post('/auth/verify-otp', { email, otp })
+}
+
 // Products API
 export const productsAPI = {
   getAll: (params) => api.get('/products', { params }),

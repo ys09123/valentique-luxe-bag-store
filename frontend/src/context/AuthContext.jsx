@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { authAPI } from "../services/api";
+import { authAPI, otpAPI } from "../services/api";
 import Loader from "../components/common/Loader";
 
 const AuthContext = createContext();
@@ -88,6 +88,42 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Send OTP to email
+  const sendOtp = async (email) => {
+    try {
+      const response = await otpAPI.sendOtp(email);
+      return { success: true, message: response.data.message };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Failed to send OTP",
+        retryAfter: err.response?.data?.retryAfter,
+        status: err.response?.status,
+      };
+    }
+  };
+
+  // Verify OTP and log the user in (same session state as login/register)
+  const verifyOtp = async (email, otp) => {
+    try {
+      const response = await otpAPI.verifyOtp(email, otp);
+      const { user, token } = response.data;
+
+      setUser(user);
+      setToken(token);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      return { success: true, user };
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "OTP verification failed",
+        status: err.response?.status,
+      };
+    }
+  };
+
   // Logout user
   const logout = () => {
     setUser(null);
@@ -122,6 +158,8 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    sendOtp,
+    verifyOtp,
     isAuthenticated: !!token,
     isAdmin: user?.role === "admin",
   };

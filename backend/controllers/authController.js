@@ -1,5 +1,16 @@
+import crypto from "crypto";
 import User from '../models/User.js'
 import generateToken from '../utils/generateToken.js'
+import {
+  createAndStoreOTP,
+  verifyOTP,
+  isOnCooldown,
+  getCooldownTTL,
+  normalizeIdentifier,
+} from '../services/otpService.js'
+import { sendOtpEmail } from '../services/emailService.js'
+
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export const register = async (req, res) => {
   try {
@@ -170,5 +181,120 @@ export const updateProfile = async (req, res) => {
       message: 'Server error',
       error: err.message
     })
+  }
+}
+
+// OTP Authentication
+export const sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if(!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+      return res.status(400).json({
+        message: 'Please provide a valid email address'
+      })
+    }
+
+    const normalizedEmail = normalizeIdentifier(email);
+
+    const onCooldown = await isOnCooldown(normalizedEmail);
+
+    if(onCooldown) {
+      const ttl = await getCooldownTTL(normalizedEmail);
+      return res.status(429).json({
+        message: 'Please wait before requesting another OTP.',
+        retryAfter: ttl > 0 ? ttl : undefined,
+      });
+    }
+
+    const otp = await createAndStoreOTP(normalizedEmail);
+
+    await sendOtpEmail(normalizedEmail, otp);
+
+    res.json({
+      success: true,
+      message: 'OTP sent successfully'
+    });
+  } catch(err) {
+    console.log(err.message);
+    // console.log(process.env.REDIS_URL);
+    res.status(503).json({
+      message: 'Unable to send OTP right now. Please try again shortly.'
+    });
+  }
+}
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if(!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+      return res.status(400).json({
+        message: 'Please provide a valid email address'
+      });
+    }
+
+    if(!otp || typeof otp !== 'string' || !/^\d{6}$/.test(otp.trim())) {
+      return res.status(400).json({
+        message: 'OTP must be a 6-digit code'
+      });
+    }
+
+    const normalizedEmail = normalizeIdentifier(email);
+
+    const result = await verifyOTP(normalizedEmail, otp.trim());
+
+    if(!result.success) {
+      if(result.reason === 'EXPIRED') {
+        return res.status(400).json({
+          message: 'OTP expired or not found. Please request a new one.'
+        });
+      }
+      if(result.reason === 'MAX_ATTEMPTS') {
+        return res.status(429).json({
+          message: 'Too many incorrect attempts. Please request a new OTP.'
+        });
+      }
+      // reason === INVALID
+      return res.status(400).json({
+        message: 'Invalid OTP. Please try again.'
+      });
+    }
+
+    // OTP verified — reuse the existing User model + generateToken util, exactly like register/login do, instead of a second auth strategy.
+
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if(!user) {
+      // First-time OTP login provisions an account. The password field is required by the existing schema but is never used for OTP-based accounts — it's a random value, hashed by the model's existing pre('save') hook, purely to satisfy the schema
+      user = await User.create({
+        name: normalizedEmail.split('@')[0],
+        email: normalizedEmail,
+        password: crypto.randomBytes(32).toString('hex'),
+        isVerified: true,
+      });
+    } else if(!user.isVerified) {
+      user.isVerified = true;
+      await user.save();
+    }
+
+    const token = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: 'OTP verified successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+      },
+      token,
+    });
+  } catch(err) {
+    console.error('Verify OTP error: ', err.message);
+    res.status(500).json({
+      message: 'Internal server error during OTP verification.'
+    });
   }
 }
