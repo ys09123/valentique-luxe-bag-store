@@ -17,8 +17,22 @@ export async function getRedisClient() {
 
   connectPromise = (async () => {
     const redisUrl = process.env.REDIS_URL || "redis://localhost:6379"
+    const usesTLS = redisUrl.startsWith("rediss://");
 
-    client = createClient({ url: redisUrl });
+    client = createClient({
+      url: redisUrl,
+      socket: {
+        connectTimeout: 10000,
+        ...(usesTLS && { tls: true, rejectUnauthorized: false }),
+        reconnectStrategy: (retries) => {
+          if (retries > 3) {
+            console.error("Redis: max reconnect attempts reached, giving up.");
+            return new Error("Redis max retries reached");
+          }
+          return Math.min(retries * 500, 3000);
+        },
+      },
+    });
 
     client.on("error", (err) => {
       console.error("Redis client error: ", err.message);
