@@ -1,63 +1,51 @@
-import nodemailer from "nodemailer";
+// Resend HTTP API — Render blocks outbound SMTP ports (587/465),
+// so we use Resend's REST API over HTTPS (port 443) instead.
 
-let transporter = null;
-let triedInit = false;
+const OTP_EXPIRY_MINUTES = Math.round(
+  (parseInt(process.env.OTP_EXPIRY, 10) || 300) / 60,
+);
 
-function getTransporter() {
-  if(triedInit) return transporter;
-  triedInit = true;
-
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-
-  if(!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    console.warn(
-      "Email provider not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env to send real OTP emails."
-    );
-    return null;
-  }
-
-  transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT) || 587,
-    secure: Number(SMTP_PORT) === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-    family: 4,
-    connectionTimeout: 10000,  // 10s to establish connection
-    greetingTimeout: 10000,    // 10s for SMTP greeting
-    socketTimeout: 15000,      // 15s for the entire send
-  });
-
-  return transporter;
-}
-
-// Send a one-time password to the given email
+/**
+ * Send a one-time password to the given email via Resend HTTP API.
+ */
 export async function sendOtpEmail(email, otp) {
-  const t = getTransporter();
+  const apiKey = process.env.RESEND_API_KEY;
 
-  if(!t) {
-    if(process.env.NODE_ENV !== "production") {
+  if (!apiKey) {
+    if (process.env.NODE_ENV !== "production") {
       console.log(`[DEV MODE] OTP for ${email}: ${otp}`);
-      return {
-        delivered: false, 
-        devMode: true
-      };
+      return { delivered: false, devMode: true };
     }
-    throw new Error("Email provider not configured");
+    throw new Error("RESEND_API_KEY is not configured");
   }
 
-  await t.sendMail({
-    from: process.env.SMTP_FROM || '"Valentique" <no-reply@valentique.com>',
-    to: email,
-    subject: "Your Valentique verification code",
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="font-weight: 300; letter-spacing: 0.05em;">Your verification code</h2>
-        <p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; margin: 24px 0;">${otp}</p>
-        <p style="color: #666;">This code expires in ${Math.round(
-          (parseInt(process.env.OTP_EXPIRY, 10) || 300) / 60,
-        )} minutes. If you didn't request this, you can safely ignore this email.</p>
-      </div>`,
+  const from = process.env.EMAIL_FROM || "Valentique <onboarding@resend.dev>";
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from,
+      to: [email],
+      subject: "Your Valentique verification code",
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2 style="font-weight: 300; letter-spacing: 0.05em;">Your verification code</h2>
+          <p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; margin: 24px 0;">${otp}</p>
+          <p style="color: #666;">This code expires in ${OTP_EXPIRY_MINUTES} minutes. If you didn't request this, you can safely ignore this email.</p>
+        </div>`,
+    }),
   });
 
-  return { delivered: true };
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Resend API error (${response.status}): ${body}`);
+  }
+
+  const data = await response.json();
+  console.log("[Email] Sent via Resend, id:", data.id);
+  return { delivered: true, id: data.id };
 }
