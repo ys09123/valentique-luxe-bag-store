@@ -20,7 +20,8 @@ function getTransporter() {
     host: SMTP_HOST,
     port: Number(SMTP_PORT) || 587,
     secure: Number(SMTP_PORT) === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS }
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    family: 4,  // Force IPv4 — Render doesn't support outbound IPv6
   });
 
   return transporter;
