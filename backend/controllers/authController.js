@@ -197,7 +197,9 @@ export const sendOtp = async (req, res) => {
 
     const normalizedEmail = normalizeIdentifier(email);
 
+    console.log('[OTP] Step 1: Checking cooldown for', normalizedEmail);
     const onCooldown = await isOnCooldown(normalizedEmail);
+    console.log('[OTP] Step 1: Redis OK, onCooldown =', onCooldown);
 
     if(onCooldown) {
       const ttl = await getCooldownTTL(normalizedEmail);
@@ -207,17 +209,21 @@ export const sendOtp = async (req, res) => {
       });
     }
 
+    console.log('[OTP] Step 2: Creating and storing OTP...');
     const otp = await createAndStoreOTP(normalizedEmail);
+    console.log('[OTP] Step 2: OTP stored in Redis OK');
 
-    await sendOtpEmail(normalizedEmail, otp);
+    console.log('[OTP] Step 3: Sending email...');
+    const emailResult = await sendOtpEmail(normalizedEmail, otp);
+    console.log('[OTP] Step 3: Email result =', JSON.stringify(emailResult));
 
     res.json({
       success: true,
       message: 'OTP sent successfully'
     });
   } catch(err) {
-    console.log(err.message);
-    // console.log(process.env.REDIS_URL);
+    console.error('[OTP] FAILED:', err.message);
+    console.error('[OTP] Stack:', err.stack);
     res.status(503).json({
       message: 'Unable to send OTP right now. Please try again shortly.'
     });
